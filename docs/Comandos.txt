@@ -1,0 +1,47 @@
+service network-manager stop
+ip addr flush dev wlan0
+ip link set wlan0 up
+iwconfig wlan0 essid Escritorio ap c4:6e:1f:91:73:1c
+
+Branco
+c4:6e:1f:91:73:1c Frequency:2.412 GHz
+
+Vermelho
+00:1c:df:18:48:86 Frequency:2.432 GHz
+
+USB
+00:0A:EB:80:62:0E Frequency:2.432 GHz
+
+
+iw dev wlan0 disconnect; iw dev wlan0 connect Escritorio 2412
+
+	dev <devname> connect [-w] <SSID> [<freq in MHz>] [<bssid>] [key 0:abcde d:1:6162636465]
+	dev <devname> disconnect
+	dev <devname> link
+	dev <devname> set channel <channel> [HT20|HT40+|HT40-]
+	phy <phyname> set channel <channel> [HT20|HT40+|HT40-]
+	dev <devname> set freq <freq> [HT20|HT40+|HT40-]
+	phy <phyname> set freq <freq> [HT20|HT40+|HT40-]
+
+
+***
+
+LOG MOSTRANDO QUE DEMORA MENOS QUE 1 SEGUNDO PRA MUDAR DE BSSID:
+Nov  2 20:08:30 lab kernel: [98796.020851] wlan0: deauthenticating from c4:6e:1f:91:73:1c by local choice (Reason: 3=DEAUTH_LEAVING)
+Nov  2 20:08:30 lab kernel: [98796.047050] cfg80211: World regulatory domain updated:
+Nov  2 20:08:30 lab kernel: [98796.047068] cfg80211:  DFS Master region: unset
+Nov  2 20:08:30 lab kernel: [98796.047073] cfg80211:   (start_freq - end_freq @ bandwidth), (max_antenna_gain, max_eirp), (dfs_cac_time)
+Nov  2 20:08:30 lab kernel: [98796.047083] cfg80211:   (2402000 KHz - 2472000 KHz @ 40000 KHz), (300 mBi, 2000 mBm), (N/A)
+Nov  2 20:08:30 lab kernel: [98796.047090] cfg80211:   (2457000 KHz - 2482000 KHz @ 40000 KHz), (300 mBi, 2000 mBm), (N/A)
+Nov  2 20:08:30 lab kernel: [98796.047097] cfg80211:   (2474000 KHz - 2494000 KHz @ 20000 KHz), (300 mBi, 2000 mBm), (N/A)
+Nov  2 20:08:30 lab kernel: [98796.047103] cfg80211:   (5170000 KHz - 5250000 KHz @ 40000 KHz), (300 mBi, 2000 mBm), (N/A)
+Nov  2 20:08:30 lab kernel: [98796.047110] cfg80211:   (5735000 KHz - 5835000 KHz @ 40000 KHz), (300 mBi, 2000 mBm), (N/A)
+Nov  2 20:08:30 lab kernel: [98796.117193] wlan0: authenticate with 00:1c:df:18:48:86
+Nov  2 20:08:30 lab kernel: [98796.142164] wlan0: send auth to 00:1c:df:18:48:86 (try 1/3)
+Nov  2 20:08:30 lab kernel: [98796.145031] wlan0: authenticated
+Nov  2 20:08:30 lab kernel: [98796.145229] ath9k 0000:07:00.0 wlan0: disabling HT as WMM/QoS is not supported by the AP
+Nov  2 20:08:30 lab kernel: [98796.145241] ath9k 0000:07:00.0 wlan0: disabling VHT as WMM/QoS is not supported by the AP
+Nov  2 20:08:30 lab kernel: [98796.149116] wlan0: associate with 00:1c:df:18:48:86 (try 1/3)
+Nov  2 20:08:30 lab kernel: [98796.152210] wlan0: RX AssocResp from 00:1c:df:18:48:86 (capab=0x401 status=0 aid=1)
+Nov  2 20:08:30 lab kernel: [98796.152432] wlan0: associated
+
