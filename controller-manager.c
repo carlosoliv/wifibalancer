@@ -68,7 +68,7 @@ char *getClient (const char *apfile, int idclient) {
 	return client;
 }
 
-int moveClientToPending (const char *apfile, const char *client, char *pending_file) {
+int moveClientToPending (char apfile[255], char client[255]) {
 	FILE *fp1, *fp2;
 	static char clientmp[255], syscom[255];
 
@@ -92,7 +92,7 @@ int moveClientToPending (const char *apfile, const char *client, char *pending_f
 	system (syscom);
 
 	// Appending client to PENDING list
-	fp1 = fopen (pending_file, "a");
+	fp1 = fopen (PENDING_FILE, "a");
 	if (fp1 == NULL) DieWithError ("Failed opening PENDING_FILE!");
 	fprintf (fp1, "%s\n", client);
 	fclose (fp1);
@@ -140,13 +140,11 @@ char *getAP (int idap) {
 	return ap;
 }
 
-char *show_status () {
+static char *show_status () {
 	FILE *fp;
 	static char ap[255], client[255];
 	static char change[10];
 	int x = 1;
-
-	system ("clear");
 
 	fp = fopen (DB_FILE, "r");
 	if (fp == NULL) DieWithError ("Failed opening DB file!");
@@ -176,9 +174,9 @@ char *show_status () {
 
 	printf ("\nPor favor escolha qual cliente voce gostaria de mover para qual AP:\n");
 	printf ("Formato: <AP_SRC> <CLIENT> <AP_DST>\n");
-	printf ("(Ou digite 'x' para sair ou 'a' para atualizar a lista.\n");
-	scanf("%[^\n]", change);
-	
+	printf ("(Ou digite 'q' para sair ou 'a' para atualizar a lista.\n");
+	fgets (change, 10, stdin);
+
 	return change;
 }
 
@@ -189,7 +187,7 @@ int main(int argc, char *argv[]) {
 	int structLen;
 	int respStringLen;
 	static char client[255], ap[255];
-	char *action_divided;
+	char *action, *action_divided;
 	char idapsrc_str[3], idclient_str[3], idapdst_str[3];
 	char *apsrc_name, *apdst_name, *clientip;
 	char apsrc[255], apdst[255], clientname[255];
@@ -201,75 +199,76 @@ int main(int argc, char *argv[]) {
 	// e perguntar pro usuario qual cliente ele gostaria de mover para qual AP.
 	// A funcao deve retornar uma string no formato "<CLIENTE> <AP>".
 
-	char *action = show_status ();
-
-	while (strcmp (action, "a") == 0)
-		action = show_status ();
+	system ("clear");
 	
-	if (strcmp (action, "x") == 0) {
-		printf ("Até!\n");
-		exit (0);
+	while (1) {
+		action = show_status ();
+
+		while (action[0] == 'a') {
+			system ("clear");
+			action = show_status ();
+		}
+
+		if (action[0] == 'q') {
+			printf ("Até!\n");
+			exit (0);
+		}
+
+		// Agora precisamos separar a string retornada em 3: ID do AP SRC, ID do cliente e ID do AP DST
+		action_divided = strtok (action, " ");
+		strcpy (idapsrc_str, action_divided);
+
+		action_divided = strtok (NULL, " ");
+		strcpy (idclient_str, action_divided);
+
+		action_divided = strtok (NULL, " ");
+		strcpy (idapdst_str, action_divided);
+
+		idapsrc = atoi (idapsrc_str);
+		idclient = atoi (idclient_str);
+		idapdst = atoi (idapdst_str);
+
+		if (idapsrc == idapdst) DieWithError ("APs SRC and DST are the same!");
+
+		apsrc_name = getAP (idapsrc);
+		if (apsrc_name == NULL) DieWithError ("AP SRC not found!");
+		strcpy (apsrc, apsrc_name);
+
+		clientip = getClient (apsrc, idclient);
+		if (clientip == NULL) DieWithError ("Client not found!");
+		strcpy (clientname, clientip);
+
+		apdst_name = getAP (idapdst);
+		if (apdst_name == NULL) DieWithError ("AP DST not found!");
+		strcpy (apdst, apdst_name);
+
+	//	printf ("AP SRC: '%s'\n", apsrc);
+	//	printf ("Client: '%s'\n", clientname);
+	//	printf ("AP DST: '%s'\n", apdst);
+
+		moveClientToPending (apsrc, clientname);
+
+		strcpy (msg.aptogo, apdst);
+
+		if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
+			DieWithError("socket() falhou\n");
+
+		memset(&echoServAddr, 0, sizeof(echoServAddr));
+		echoServAddr.sin_family = AF_INET;
+		echoServAddr.sin_addr.s_addr = inet_addr(clientname);
+		echoServAddr.sin_port   = htons(STATION_MANAGER_PORT);
+
+		if (inet_aton(clientname, &echoServAddr.sin_addr) == 0) {
+			fprintf(stderr, "Falha ao conectar com cliente '%s' :(\n", clientname);
+			exit(1);
+		}
+		printf ("Pedindo pro cliente '%s' ir para o AP '%s'...\n", clientname, apdst);
+		sleep (4);
+
+		sendto(sock, &msg, sizeof(msg), 0, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr));
+
+		system ("clear");
+
+		close(sock);
 	}
-
-	// Agora precisamos separar a string retornada em 3: ID do AP SRC, ID do cliente e ID do AP DST
-	action_divided = strtok (action, " ");
-	strcpy (idapsrc_str, action_divided);
-
-	action_divided = strtok (NULL, " ");
-	strcpy (idclient_str, action_divided);
-
-	action_divided = strtok (NULL, " ");
-	strcpy (idapdst_str, action_divided);
-
-	idapsrc = atoi (idapsrc_str);
-	idclient = atoi (idclient_str);
-	idapdst = atoi (idapdst_str);
-
-	if (idapsrc == idapdst) DieWithError ("APs SRC and DST are the same!");
-
-	apsrc_name = getAP (idapsrc);
-	if (apsrc_name == NULL) DieWithError ("AP SRC not found!");
-	strcpy (apsrc, apsrc_name);
-
-	clientip = getClient (apsrc, idclient);
-	if (clientip == NULL) DieWithError ("Client not found!");
-	strcpy (clientname, clientip);
-
-	apdst_name = getAP (idapdst);
-	if (apdst_name == NULL) DieWithError ("AP DST not found!");
-	strcpy (apdst, apdst_name);
-
-	printf ("AP SRC: '%s'\n", apsrc);
-	printf ("Client: '%s'\n", clientname);
-	printf ("AP DST: '%s'\n", apdst);
-
-/*
-	if ((strcmp (firstap, "") == 0) || ((strcmp (lastap, "") == 0)))
-		DieWithError ("Cant find APs!");
-	if (strcmp (firstclient, "") == 0) DieWithError ("Cant find clients!");
-
-	moveClientToPending (firstap, firstclient, PENDING_FILE);
-
-	strcpy (msg.aptogo, lastap);
-
-	if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
-		DieWithError("socket() failed\n");
-
-	memset(&echoServAddr, 0, sizeof(echoServAddr));
-	echoServAddr.sin_family = AF_INET;
-	echoServAddr.sin_addr.s_addr = inet_addr(firstclient);
-	echoServAddr.sin_port   = htons(STATION_MANAGER_PORT);
-
-	if (inet_aton(firstclient , &echoServAddr.sin_addr) == 0) {
-		fprintf(stderr, "Failed connecting to client '%s' :(\n", firstclient);
-		exit(1);
-	}
-
-	printf ("Asking client '%s' to move to AP '%s'...\n", firstclient, lastap);
-
-	sendto(sock, &msg, sizeof(msg), 0, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr));
-	close(sock);
-
-	exit(0);
-	*/
 }
