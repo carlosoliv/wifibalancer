@@ -56,14 +56,14 @@ char *getClient (const char *apfile, int idclient) {
 
 	while (!feof(fp)) {
 		fscanf (fp, "%s", client);
+		if (feof (fp)) break;
 		if (x == idclient) found = 1;
 		if (x == idclient) break;
 		x++;
 	}
 	fclose (fp);
 
-	printf ("x: %d\nclient: %d\n\n", x, idclient);
-	if ((x < idclient) || (found == 0)) return NULL;
+	if (found == 0) return NULL;
 
 	return client;
 }
@@ -121,19 +121,21 @@ void list_clients (const char *apfile) {
 char *getAP (int idap) {
 	FILE *fp;
 	static char ap[255];
-	int x = 1;
+	int x = 1, found = 0;
 
 	fp = fopen (DB_FILE, "r");
 	if (fp == NULL) DieWithError ("Failed opening DB file!");
 
 	while (!feof(fp)) {
 		fscanf (fp, "%s", ap);
+		if (feof (fp)) break;
+		if (x == idap) found = 1;
 		if (x == idap) break;
 		x++;
 	}
 	fclose (fp);
 
-	if (x < idap) return NULL;
+	if (found == 0) return NULL;
 
 	return ap;
 }
@@ -166,6 +168,7 @@ char *show_status () {
 
 	while (!feof(fp)) {
 		fscanf (fp, "%s", client);
+		if (feof (fp)) break;
 		printf ("\t%d- %s\n", x, client);
 		x++;
 	}
@@ -222,13 +225,7 @@ int main(int argc, char *argv[]) {
 	idclient = atoi (idclient_str);
 	idapdst = atoi (idapdst_str);
 
-//	printf ("idapsrc: '%d'\nidclient: '%d'\nidapdst: '%d'\n", idapsrc, idclient, idapdst);
-
-//	const char *firstap = firstAP(DB_FILE);
-//	const char *lastap = lastAP(DB_FILE);
-//	const char *firstclient = getClient(firstap);
-
-	printf ("apsrc: %d\napdst: %d\n\n", idapsrc, idapdst);
+	if (idapsrc == idapdst) DieWithError ("APs SRC and DST are the same!");
 
 	apsrc_name = getAP (idapsrc);
 	if (apsrc_name == NULL) DieWithError ("AP SRC not found!");
