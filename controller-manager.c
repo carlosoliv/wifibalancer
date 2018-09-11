@@ -21,40 +21,50 @@ void DieWithError(char *err) {
 	exit(1);
 }
 
-const char *firstAP (char *dbfile) {
+const char *firstAP () {
 	FILE *fp;
 	static char ap[255];
 
-	fp = fopen (dbfile, "r");
+	fp = fopen (DB_FILE, "r");
 	if (fp == NULL) DieWithError ("Failed opening DB file!");
 	fscanf (fp, "%s", ap);
 	fclose (fp);
 	return ap;
 }
 
-const char *lastAP (char *dbfile) {
+const char *lastAP () {
 	FILE *fp;
-	static char ap[255], ap2[255];
+	static char ap[255];
 
-	fp = fopen (dbfile, "r");
+	fp = fopen (DB_FILE, "r");
 	if (fp == NULL) DieWithError ("Failed opening DB file!");
 
 	while (!feof(fp)) {
 		fscanf (fp, "%s", ap);
-		fscanf (fp, "%s", ap2);
 	}
 	fclose (fp);
 	return ap;
 }
 
-const char *getClient (const char *apfile) {
+char *getClient (const char *apfile, int idclient) {
 	FILE *fp;
 	static char client[255];
+	int x = 1, found = 0;
 
 	fp = fopen (apfile, "r");
 	if (fp == NULL) DieWithError ("Failed opening AP file!");
-	fscanf (fp, "%s", client);
+
+	while (!feof(fp)) {
+		fscanf (fp, "%s", client);
+		if (x == idclient) found = 1;
+		if (x == idclient) break;
+		x++;
+	}
 	fclose (fp);
+
+	printf ("x: %d\nclient: %d\n\n", x, idclient);
+	if ((x < idclient) || (found == 0)) return NULL;
+
 	return client;
 }
 
@@ -101,13 +111,34 @@ void list_clients (const char *apfile) {
 
 	while (!feof(fp)) {
 		fscanf (fp, "%s", client);
+		if (feof (fp)) break;
 		printf ("\t%d- %s\n", x, client);
 		x++;
 	}
 	fclose (fp);
 }
 
-char *show_status (const char *dbfile) {
+char *getAP (int idap) {
+	FILE *fp;
+	static char ap[255];
+	int x = 1;
+
+	fp = fopen (DB_FILE, "r");
+	if (fp == NULL) DieWithError ("Failed opening DB file!");
+
+	while (!feof(fp)) {
+		fscanf (fp, "%s", ap);
+		if (x == idap) break;
+		x++;
+	}
+	fclose (fp);
+
+	if (x < idap) return NULL;
+
+	return ap;
+}
+
+char *show_status () {
 	FILE *fp;
 	static char ap[255], client[255];
 	static char change[10];
@@ -115,15 +146,15 @@ char *show_status (const char *dbfile) {
 
 	system ("clear");
 
-	fp = fopen (dbfile, "r");
+	fp = fopen (DB_FILE, "r");
 	if (fp == NULL) DieWithError ("Failed opening DB file!");
 
 	while (!feof(fp)) {
 		fscanf (fp, "%s", ap);
+		if (feof (fp)) break;
 		printf ("%d- %s\n", x, ap);
-		x++;
-
 		list_clients (ap);
+		x++;
 	}
 	fclose (fp);
 
@@ -140,13 +171,12 @@ char *show_status (const char *dbfile) {
 	}
 	fclose (fp);
 
-	printf ("Por favor escolha qual cliente voce gostaria de mover para qual AP:\n");
-	printf ("Exemplo: para mover o cliente 2 para o AP 3, digite \"2 3\"");
-	printf ("\n(Ou digite 'x' para sair ou 'a' para atualizar a lista.\n");
+	printf ("\nPor favor escolha qual cliente voce gostaria de mover para qual AP:\n");
+	printf ("Formato: <AP_SRC> <CLIENT> <AP_DST>\n");
+	printf ("(Ou digite 'x' para sair ou 'a' para atualizar a lista.\n");
 	scanf("%[^\n]", change);
 	
 	return change;
-
 }
 
 int main(int argc, char *argv[]) { 
@@ -157,8 +187,10 @@ int main(int argc, char *argv[]) {
 	int respStringLen;
 	static char client[255], ap[255];
 	char *action_divided;
-	char idap_str[3], idclient_str[3];
-	int idap, idclient;
+	char idapsrc_str[3], idclient_str[3], idapdst_str[3];
+	char *apsrc_name, *apdst_name, *clientip;
+	char apsrc[255], apdst[255], clientname[255];
+	int idapsrc, idclient, idapdst;
 
 	Pacote msg;
 	
@@ -166,32 +198,55 @@ int main(int argc, char *argv[]) {
 	// e perguntar pro usuario qual cliente ele gostaria de mover para qual AP.
 	// A funcao deve retornar uma string no formato "<CLIENTE> <AP>".
 
-	char *action = show_status (DB_FILE);
+	char *action = show_status ();
 
 	while (strcmp (action, "a") == 0)
-		action = show_status (DB_FILE);
+		action = show_status ();
 	
 	if (strcmp (action, "x") == 0) {
 		printf ("Até!\n");
 		exit (0);
 	}
 
-	// Agora precisamos separar a string retornada em 2: ID do cliente e ID do AP
+	// Agora precisamos separar a string retornada em 3: ID do AP SRC, ID do cliente e ID do AP DST
 	action_divided = strtok (action, " ");
-	strcpy (idclient_str, action_divided);
+	strcpy (idapsrc_str, action_divided);
+
 	action_divided = strtok (NULL, " ");
-	strcpy (idap_str, action_divided);
+	strcpy (idclient_str, action_divided);
 
-	idap = atoi (idap_str);
+	action_divided = strtok (NULL, " ");
+	strcpy (idapdst_str, action_divided);
+
+	idapsrc = atoi (idapsrc_str);
 	idclient = atoi (idclient_str);
+	idapdst = atoi (idapdst_str);
 
-	printf ("idclient: '%d'\nidap: '%d'\n", idclient, idap);
+//	printf ("idapsrc: '%d'\nidclient: '%d'\nidapdst: '%d'\n", idapsrc, idclient, idapdst);
+
+//	const char *firstap = firstAP(DB_FILE);
+//	const char *lastap = lastAP(DB_FILE);
+//	const char *firstclient = getClient(firstap);
+
+	printf ("apsrc: %d\napdst: %d\n\n", idapsrc, idapdst);
+
+	apsrc_name = getAP (idapsrc);
+	if (apsrc_name == NULL) DieWithError ("AP SRC not found!");
+	strcpy (apsrc, apsrc_name);
+
+	clientip = getClient (apsrc, idclient);
+	if (clientip == NULL) DieWithError ("Client not found!");
+	strcpy (clientname, clientip);
+
+	apdst_name = getAP (idapdst);
+	if (apdst_name == NULL) DieWithError ("AP DST not found!");
+	strcpy (apdst, apdst_name);
+
+	printf ("AP SRC: '%s'\n", apsrc);
+	printf ("Client: '%s'\n", clientname);
+	printf ("AP DST: '%s'\n", apdst);
 
 /*
-	const char *firstap = firstAP(DB_FILE);
-	const char *lastap = lastAP(DB_FILE);
-	const char *firstclient = getClient(firstap);
-
 	if ((strcmp (firstap, "") == 0) || ((strcmp (lastap, "") == 0)))
 		DieWithError ("Cant find APs!");
 	if (strcmp (firstclient, "") == 0) DieWithError ("Cant find clients!");
