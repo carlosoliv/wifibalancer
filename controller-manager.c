@@ -107,7 +107,7 @@ void list_clients (const char *apfile) {
 	fclose (fp);
 }
 
-const char *show_status (const char *dbfile) {
+char *show_status (const char *dbfile) {
 	FILE *fp;
 	static char ap[255], client[255];
 	static char change[10];
@@ -143,7 +143,7 @@ const char *show_status (const char *dbfile) {
 	printf ("Por favor escolha qual cliente voce gostaria de mover para qual AP:\n");
 	printf ("Exemplo: para mover o cliente 2 para o AP 3, digite \"2 3\"");
 	printf ("\n(Ou digite 'x' para sair ou 'a' para atualizar a lista.\n");
-	scanf ("%s", change);
+	scanf("%[^\n]", change);
 	
 	return change;
 
@@ -156,6 +156,9 @@ int main(int argc, char *argv[]) {
 	int structLen;
 	int respStringLen;
 	static char client[255], ap[255];
+	char *action_divided;
+	char idap_str[3], idclient_str[3];
+	int idap, idclient;
 
 	Pacote msg;
 	
@@ -163,7 +166,7 @@ int main(int argc, char *argv[]) {
 	// e perguntar pro usuario qual cliente ele gostaria de mover para qual AP.
 	// A funcao deve retornar uma string no formato "<CLIENTE> <AP>".
 
-	const char *action = show_status (DB_FILE);
+	char *action = show_status (DB_FILE);
 
 	while (strcmp (action, "a") == 0)
 		action = show_status (DB_FILE);
@@ -174,8 +177,15 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Agora precisamos separar a string retornada em 2: ID do cliente e ID do AP
+	action_divided = strtok (action, " ");
+	strcpy (idclient_str, action_divided);
+	action_divided = strtok (NULL, " ");
+	strcpy (idap_str, action_divided);
 
-	//client = str
+	idap = atoi (idap_str);
+	idclient = atoi (idclient_str);
+
+	printf ("idclient: '%d'\nidap: '%d'\n", idclient, idap);
 
 /*
 	const char *firstap = firstAP(DB_FILE);
