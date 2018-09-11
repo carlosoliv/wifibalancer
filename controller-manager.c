@@ -90,14 +90,94 @@ int moveClientToPending (const char *apfile, const char *client, char *pending_f
 	return 0;
 }
 
+// Lists all clients in specific AP
+void list_clients (const char *apfile) {
+	FILE *fp;
+	static char client[255];
+	int x = 1;
+
+	fp = fopen (apfile, "r");
+	if (fp == NULL) DieWithError ("Failed opening AP file!");
+
+	while (!feof(fp)) {
+		fscanf (fp, "%s", client);
+		printf ("\t%d- %s\n", x, client);
+		x++;
+	}
+	fclose (fp);
+}
+
+const char *show_status (const char *dbfile) {
+	FILE *fp;
+	static char ap[255], client[255];
+	static char change[10];
+	int x = 1;
+
+	system ("clear");
+
+	fp = fopen (dbfile, "r");
+	if (fp == NULL) DieWithError ("Failed opening DB file!");
+
+	while (!feof(fp)) {
+		fscanf (fp, "%s", ap);
+		printf ("%d- %s\n", x, ap);
+		x++;
+
+		list_clients (ap);
+	}
+	fclose (fp);
+
+	fp = fopen (PENDING_FILE, "r");
+	if (fp == NULL) DieWithError ("Failed opening PENDING file!");
+
+	x = 1;
+	printf ("Pending:\n");
+
+	while (!feof(fp)) {
+		fscanf (fp, "%s", client);
+		printf ("\t%d- %s\n", x, client);
+		x++;
+	}
+	fclose (fp);
+
+	printf ("Por favor escolha qual cliente voce gostaria de mover para qual AP:\n");
+	printf ("Exemplo: para mover o cliente 2 para o AP 3, digite \"2 3\"");
+	printf ("\n(Ou digite 'x' para sair ou 'a' para atualizar a lista.\n");
+	scanf ("%s", change);
+	
+	return change;
+
+}
+
 int main(int argc, char *argv[]) { 
 	int sock;
 	struct sockaddr_in echoServAddr;
 	struct sockaddr_in fromAddr;
 	int structLen;
 	int respStringLen;
+	static char client[255], ap[255];
+
 	Pacote msg;
 	
+	// Vamos mostrar uma lista dos APs e seus clientes
+	// e perguntar pro usuario qual cliente ele gostaria de mover para qual AP.
+	// A funcao deve retornar uma string no formato "<CLIENTE> <AP>".
+
+	const char *action = show_status (DB_FILE);
+
+	while (strcmp (action, "a") == 0)
+		action = show_status (DB_FILE);
+	
+	if (strcmp (action, "x") == 0) {
+		printf ("Até!\n");
+		exit (0);
+	}
+
+	// Agora precisamos separar a string retornada em 2: ID do cliente e ID do AP
+
+	//client = str
+
+/*
 	const char *firstap = firstAP(DB_FILE);
 	const char *lastap = lastAP(DB_FILE);
 	const char *firstclient = getClient(firstap);
@@ -129,4 +209,5 @@ int main(int argc, char *argv[]) {
 	close(sock);
 
 	exit(0);
+	*/
 }
