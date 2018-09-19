@@ -9,17 +9,12 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
-#define PORTA 8881
+#include "common.h"
 
 void DieWithError(char *err) {
-	printf ("%s", err);
+	fprintf(stderr, "%s\n", err);
 	exit(1);
 }
-
-typedef struct __attribute__((__packed__)) pkt {
-	char aptogo[255];
-} Pacote;
 
 char * executeCmd (char * cmd) {
 	FILE *fp;

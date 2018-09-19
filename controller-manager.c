@@ -7,14 +7,9 @@
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
-#define STATION_MANAGER_PORT 5502
-#define DB_FILE "DB.txt"
-#define PENDING_FILE "PENDING.txt"
-
-typedef struct __attribute__((__packed__)) pkt {
-	char aptogo[255];
-} Pacote;
+#include <sys/types.h>
+#include <sys/wait.h>
+#include "common.h"
 
 void DieWithError(char *err) {
 	fprintf(stderr, "%s\n", err);
@@ -90,6 +85,7 @@ int moveClientToPending (char apfile[255], char client[255]) {
 	strcpy (syscom, "mv .tmpfile ");
 	strcat (syscom, apfile);
 	system (syscom);
+	system ("rm -f .tmpfile");
 
 	// Appending client to PENDING list
 	fp1 = fopen (PENDING_FILE, "a");
@@ -193,7 +189,7 @@ int main(int argc, char *argv[]) {
 	char apsrc[255], apdst[255], clientname[255];
 	int idapsrc, idclient, idapdst;
 
-	Pacote msg;
+	PktAction msg;
 	
 	// Vamos mostrar uma lista dos APs e seus clientes
 	// e perguntar pro usuario qual cliente ele gostaria de mover para qual AP.
