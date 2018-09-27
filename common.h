@@ -4,11 +4,11 @@
 #define DB_FILE "DB.txt"
 #define PENDING_FILE "PENDING.txt"
 
-typedef struct __attribute__((__packed__)) pkt {
+typedef struct __attribute__((__packed__)) pktact {
 	char aptogo[255];
 } PktAction;
 
-typedef struct __attribute__((__packed__)) pkt {
+typedef struct __attribute__((__packed__)) pktnot {
     char myip[255];
     char myap[255];
 } PktNotifier;

@@ -49,7 +49,7 @@ void removePendencia (char myip[255], char myap[255]) {
 	// Removing client from PENDING file
 	while (!feof(fp1)) {
 		fscanf (fp1, "%s", clientmp);
-		if ((strcmp (clientmp, client) != 0) && (!feof(fp1))) {
+		if ((strcmp (clientmp, myip) != 0) && (!feof(fp1))) {
 			fprintf (fp2, "%s\n", clientmp);
 		}
 	}
