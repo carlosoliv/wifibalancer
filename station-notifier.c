@@ -7,29 +7,13 @@
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
-#define STATION_MANAGER_PORT 5502
+#include <sys/types.h>
+#include <sys/wait.h>
+#include "common.h"
 
 void DieWithError(char *err) {
-	printf ("%s", err);
+	fprintf(stderr, "%s\n", err);
 	exit(1);
-}
-
-typedef struct __attribute__((__packed__)) pkt {
-	int vel;
-	int num;
-} Pacote;
-
-void salva (int vel, int num) {
-	FILE *fp;
-
-	char velFile[255];
-	strcpy (velFile, "log-client-");
-	sprintf (velFile, "%s%d", velFile, vel);
-
-	fp = fopen (velFile, "a");
-	fprintf (fp, "%d\n", num);
-	fclose (fp);
 }
 
 int main(int argc, char *argv[]) { 

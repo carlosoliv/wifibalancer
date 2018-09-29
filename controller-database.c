@@ -100,7 +100,7 @@ int main (int argc, char *argv[]) {
 	cliAddrLen = sizeof(echoClntAddr);
 
 	for (;;) {
-		printf("Esperando comando do servidor...");
+		printf("Controller Database: esperando comando da estacao...");
 		fflush(stdout);
 
 		if ((recvfrom(sock, &msg, sizeof(msg), 0, (struct sockaddr *) &echoClntAddr, &cliAddrLen)) < 0)

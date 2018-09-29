@@ -1,6 +1,8 @@
 #define CONTROLLER_DATABASE_PORT 5501
 #define STATION_MANAGER_PORT 5502
 
+#define APATUAL "apatual.txt"
+#define APNEW "apnew.txt"
 #define DB_FILE "DB.txt"
 #define PENDING_FILE "PENDING.txt"
 
