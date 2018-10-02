@@ -36,6 +36,36 @@ int checaPendencia (char myip[255]) {
 	return found;
 }
 
+// Checar se o IP esta na lista de um AP
+int checaPresenca (char myip[255], char myap[255]) {
+	FILE *fp;
+	char ipclient[255];
+	int found = 0;
+
+	fp = fopen (myap, "r");
+	if (fp == NULL) DieWithError ("Failed opening AP file!");
+
+	while (!feof(fp)) {
+		fscanf (fp, "%s", ipclient);
+		if (feof (fp)) break;
+		if (strcmp (ipclient, myip) == 0) found = 1;
+		if (strcmp (ipclient, myip) == 0) break;
+	}
+	fclose (fp);
+
+	return found;
+}
+
+// Adiciona IP num AP
+void adiciona (char myip[255], char myap[255]) {
+	FILE *fp;
+
+	fp = fopen (myap, "a");
+	if (fp == NULL) DieWithError ("Failed opening AP file!");
+	fprintf (fp, "%s", myip);
+	fclose (fp);
+}
+
 // Remover o AP da lista de pendentes e adicionar no final do arquivo AP
 void removePendencia (char myip[255], char myap[255]) {
 	FILE *fp1, *fp2;
@@ -71,7 +101,8 @@ void atualizaEstacao (char myip[255], char myap[255]) {
 	// ok 1- Checar se o IP esta na lista de pendentes
 	// 2- Se estiver, remover o AP da lista de pendentes e adicionar no final do arquivo AP
 	// 3- Opcional: re-ordenar a lista de APs com os mais ocupados primeiro
-	int  pendente = checaPendencia (myip);
+	int pendente = checaPendencia (myip);
+	int presenca = 0;
 
 	if (pendente == 1) {
 		printf ("O cliente '%s' estava na lista de pendentes!\n", myip);
@@ -80,6 +111,15 @@ void atualizaEstacao (char myip[255], char myap[255]) {
 	}
 	else {
 		printf ("O cliente '%s' NAO estava na lista de pendentes.\n", myip);
+
+		presenca = checaPresenca (myip, myap);
+		if (presenca == 0) {
+			printf ("Cliente novo! Adicionando '%s' no AP '%s'.\n", myip, myap);
+			adiciona (myap, myip);
+		}
+		else {
+			printf ("O cliente '%s' ja estava na lista do AP.\n", myip);
+		}
 	}
 }
 
