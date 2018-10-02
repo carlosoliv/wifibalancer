@@ -38,20 +38,20 @@ int main(int argc, char *argv[]) {
 
 	// Pegando a interface de rede:
 	system ("rm -rf .tmpfile");
-	system ("iwconfig |grep IEEE | awk '{print $1}' > .tmpfile  >/dev/null");
+	system ("iwconfig 2>&1 |grep IEEE | awk '{print $1}' > .tmpfile");
 	fp = fopen (".tmpfile", "r");
 	fscanf (fp, "%s", mynet);
 	fclose (fp);
 	system ("rm -rf .tmpfile");
 
-	printf ("Interface detectada: '%s'\n", mynet);
+//	printf ("Interface detectada: '%s'\n", mynet);
 
 	// Pegando o AP:
 	system ("rm -rf .myap");
 	strcpy (cmd, "iwconfig ");
 	strcat (cmd, mynet);
 	strcat (cmd, " | grep Point | awk '{print $6}' > .myap");
-	printf ("cmd: '%s'\n", cmd);
+//	printf ("cmd: '%s'\n", cmd);
 	system (cmd);
 	fp = fopen (".myap", "r");
 	fscanf (fp, "%s", myap);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 	strcpy (cmd, "ifconfig ");
 	strcat (cmd, mynet);
 	strcat (cmd, " | grep 'inet addr' | awk '{print $2}' | sed 's/addr://g' > .myip");
-	printf ("cmd: '%s'\n", cmd);
+//	printf ("cmd: '%s'\n", cmd);
 	system (cmd);
 	fp = fopen (".myip", "r");
 	fscanf (fp, "%s", myip);

@@ -158,7 +158,7 @@ static char *show_status () {
 	if (fp == NULL) DieWithError ("Failed opening PENDING file!");
 
 	x = 1;
-	printf ("Pending:\n");
+	printf ("\nPending:\n");
 
 	while (!feof(fp)) {
 		fscanf (fp, "%s", client);
