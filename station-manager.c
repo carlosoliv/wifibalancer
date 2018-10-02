@@ -95,10 +95,13 @@ int monitoraInterface () {
 }
 
 void mudaAP (char *bssid) {
-	char comando[200];
+	char cmd[500];
 	char *data;
 	int status;
 	FILE *fp;
+	char mynet[255];
+
+	pegaInterface(mynet, sizeof (mynet));
 
 	// Salvando AP novo
 	fp = fopen (APNEW, "w");
@@ -106,10 +109,14 @@ void mudaAP (char *bssid) {
 	fprintf (fp, "%s", bssid);
 	fclose (fp);
 
-	strcpy(comando, "iw dev wlan0 disconnect; iw dev wlan0 connect Escritorio ");
-	strcat(comando, bssid);
-//	system (comando);
-	printf ("comando: |%s|\n", comando);
+	strcpy (cmd, "iw dev ");
+	strcat (cmd, mynet);
+	strcat (cmd, " disconnect; iw dev ");
+	strcat (cmd, mynet);
+	strcat (cmd, " connect Aqui ");
+	strcat(cmd, bssid);
+	system (cmd);
+	printf ("cmd: |%s|\n", cmd);
 
 	printf ("Esperando associar ao novo AP...\n");
 	sleep (2);

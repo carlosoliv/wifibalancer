@@ -12,3 +12,11 @@ Associou: connect; iw dev wlan0 connect Escritorio C4:6E:1F:91:73:1C
 Associou: connect; iw dev wlan0 connect Escritorio C4:6E:1F:91:73:1C
 
 Associou: 00:19:9D:34:38:41
+
+Associou: 00:19:9D:34:38:41
+
+Associou: 00:19:9D:34:38:41
+
+NAO associou: dBm
+
+Associou: 00:19:9D:34:38:41
