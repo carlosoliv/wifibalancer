@@ -42,10 +42,12 @@ int monitoraInterface () {
 	char canalatual[10];
 	FILE *fp, *flog;
 
+	system ("rm -rf .status");
 	system ("iwconfig wlan0 | grep Point | awk '{print $6}' > .status");
 	fp = fopen (".status", "r");
 	fscanf (fp, "%s", status);
 	fclose (fp);
+	system ("rm -rf .status");
 
 	flog = fopen("log-station.txt", "a");
 

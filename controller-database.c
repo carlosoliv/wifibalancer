@@ -74,7 +74,12 @@ void atualizaEstacao (char myip[255], char myap[255]) {
 	int  pendente = checaPendencia (myip);
 
 	if (pendente == 1) {
+		printf ("O cliente '%s' estava na lista de pendentes!\n", myip);
+		printf ("Movendo ele para o AP '%s'...\n", myap);
 		removePendencia (myip, myap);
+	}
+	else {
+		printf ("O cliente '%s' NAO estava na lista de pendentes.\n", myip);
 	}
 }
 
