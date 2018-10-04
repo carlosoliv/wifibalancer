@@ -18,6 +18,11 @@
 	//2- Salvar o canal dele no arquivo apatual
 	// iwconfig wlan0 | grep Frequency | awk '{print $2}' | cut -c 11-15 | sed 's/\\.//g'
 
+	// 3- Conectando numa rede com o NetworkManager
+	// nmcli d wifi connect XX:XX:XX:XX:XX:XX
+
+	// https://askubuntu.com/questions/833905/how-can-i-connect-to-a-specific-bssid
+
 void DieWithError(char *err) {
 	fprintf(stderr, "%s\n", err);
 	exit(1);
@@ -49,7 +54,7 @@ void salvaAPAtual () {
 	strcat (cmd, APATUAL);
 	system (cmd);
 
-	printf ("Salvando ap atual: |%s|\n", cmd);
+//	printf ("Salvando ap atual: |%s|\n", cmd);
 
 }
 
@@ -77,7 +82,7 @@ int monitoraInterface () {
 
 	flog = fopen("log-station.txt", "a");
 
-	printf ("Status: |%s|\n", status);
+	//printf ("Status: |%s|\n", status);
 
 	// Se nao associou a um AP
 	if (strcmp (status, "dBm") == 0) {
@@ -96,12 +101,7 @@ int monitoraInterface () {
 
 void mudaAP (char *bssid) {
 	char cmd[500];
-	char *data;
-	int status;
 	FILE *fp;
-	char mynet[255];
-
-	pegaInterface(mynet, sizeof (mynet));
 
 	// Salvando AP novo
 	fp = fopen (APNEW, "w");
@@ -109,17 +109,16 @@ void mudaAP (char *bssid) {
 	fprintf (fp, "%s", bssid);
 	fclose (fp);
 
-	strcpy (cmd, "iw dev ");
-	strcat (cmd, mynet);
-	strcat (cmd, " disconnect; iw dev ");
-	strcat (cmd, mynet);
-	strcat (cmd, " connect Aqui ");
+	// nmcli d wifi connect XX:XX:XX:XX:XX:XX
+
+	strcpy (cmd, "nmcli d wifi connect ");
 	strcat(cmd, bssid);
+	strcat(cmd, " password senhalegal10");
 	system (cmd);
 	printf ("cmd: |%s|\n", cmd);
 
 	printf ("Esperando associar ao novo AP...\n");
-	sleep (2);
+	sleep (3);
 }
 
 int main(int argc, char *argv[]) {
