@@ -34,3 +34,5 @@ Associou: 00:19:9D:34:38:41
 Associou: C4:6E:1F:91:73:1C
 
 Associou: 00:19:9D:34:38:41
+
+Associou: 00:19:9D:34:38:41

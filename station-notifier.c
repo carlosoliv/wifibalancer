@@ -59,10 +59,11 @@ int main(int argc, char *argv[]) {
 	system ("rm -rf .myap");
 
 	// Pegando o IP:
+	// ip addr show dev wlp2s0 | grep "inet " |  awk '{print $2}' | cut -d / -f1
 	system ("rm -rf .myip");
-	strcpy (cmd, "ifconfig ");
+	strcpy (cmd, "ip addr show dev ");
 	strcat (cmd, mynet);
-	strcat (cmd, " | grep 'inet addr' | awk '{print $2}' | sed 's/addr://g' > .myip");
+	strcat (cmd, " | grep 'inet ' |  awk '{print $2}' | cut -d / -f1 > .myip");
 //	printf ("cmd: '%s'\n", cmd);
 	system (cmd);
 	fp = fopen (".myip", "r");
