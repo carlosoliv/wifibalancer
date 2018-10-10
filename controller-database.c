@@ -43,7 +43,20 @@ int checaPresenca (char myip[255], char myap[255]) {
 	int found = 0;
 
 	fp = fopen (myap, "r");
-	if (fp == NULL) DieWithError ("Failed opening AP file!");
+	if (fp == NULL) {
+
+		// Novo AP! Criar arquivo do AP e adicionar ele no arquivo DB
+
+		fp = fopen (myap, "w");
+		fprintf (fp, "%s\n", myip);
+		fclose (fp);
+
+		fp = fopen (DB_FILE, "a");
+		fprintf (fp, "%s\n", myap);
+		fclose (fp);
+
+		return 1;
+	}
 
 	while (!feof(fp)) {
 		fscanf (fp, "%s", ipclient);
