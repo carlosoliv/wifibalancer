@@ -80,22 +80,22 @@ int monitoraInterface () {
 	fclose (fp);
 	system ("rm -rf .status");
 
-	flog = fopen("log-station.txt", "a");
+	flog = fopen("station.log", "a");
 
 	//printf ("Status: |%s|\n", status);
 
 	// Se nao associou a um AP
 	if (strcmp (status, "dBm") == 0) {
-		fprintf(flog, "\nNAO associou: %s\n", status);
+		fprintf(flog, "NAO associou: %s\n", status);
 		printf ("Nao consegui me associar a um AP =(\n");
 		fclose (flog);
 		return 1;
 	}
 	else {
-		fprintf(flog, "\nAssociou: %s\n", status);
+		fprintf(flog, "Associou: %s\n", status);
 		printf ("Associado a '%s'.\n", status);
 		fclose (flog);
-		return 0;		
+		return 0;
 	}
 }
 
