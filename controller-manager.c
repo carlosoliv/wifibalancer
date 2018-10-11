@@ -207,6 +207,7 @@ int main(int argc, char *argv[]) {
 
 		if (action[0] == 'q') {
 			printf ("Até!\n");
+			system ("killall controller-database > /dev/null 2>&1");
 			exit (0);
 		}
 
