@@ -4,8 +4,6 @@ Este projeto é um protótipo de um balanceador de carga de clientes conectados 
 
 A ideia é prover uma forma para a rede gerenciar clientes wireless de forma transparente para os clientes, para balancear os recursos dos APs.
 
-The idea is to provide a way for the network to transparently manage wireless clients and which APs they associate to, in order to balance the APs resources.
-
 ## Modo de uso
 
 O sistema consiste em 2 módulos: um que roda no computador controlador (controller.sh) e outro que roda nas estações (station.sh).
