@@ -1,8 +1,11 @@
 #!/bin/bash
+
+# Para solicitar a senha do sudo, que eh necessaria pra rodar o station-manager
 [ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
 
 controller=$1
 
+# Caso o usuario aperte CTRL+C, finalizar corretamente
 trap "kill_stuff" INT
 
 function kill_stuff() {

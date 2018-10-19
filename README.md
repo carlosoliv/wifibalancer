@@ -24,7 +24,7 @@ O sistema consiste em 2 módulos: um que roda no computador controlador (control
 
 2- Desative o serviço DHCP de um dos APs e certifique-se que ambos estão com a mesma configuração de rede e máscara;
 
-3- Conecte o computador controlador e o computador estação a um dos APs e anote o IP  do computador controlador;
+3- Conecte o computador controlador e o computador estação a um dos APs e anote o IP recebido no computador controlador;
 
 4- No computador controlador, inicie o processo "controller.sh";
 
