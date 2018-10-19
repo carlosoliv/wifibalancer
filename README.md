@@ -26,7 +26,7 @@ O sistema consiste em 2 módulos: um que roda no computador controlador (control
 
 4- No computador controlador, inicie o processo "controller.sh";
 
-5- No computador, inicie o processo "station.sh", passando o IP do controlador como parametro. Esse processo vai precisar da senha de sudo pois ele gerencia a conectividade wireless da maquina.
+5- No computador estação, inicie o processo "station.sh", passando o IP do controlador como parametro. Esse processo vai precisar da senha de sudo pois ele gerencia a conectividade wireless da maquina.
 
 6- No controlador, siga as instruções na tela do programa para comandar a estação para que se conecte a outros APs.
 
