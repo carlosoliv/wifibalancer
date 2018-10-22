@@ -12,9 +12,12 @@ O sistema consiste em 2 módulos: um que roda no computador controlador (control
 
 1- Ter pelo menos 2 APs;
 
-2- Ter pelo menos 2 computadores, um para simular o controlador, e outro pra simular uma estação;
+2- Um cabo ethernet;
 
-3- Um cabo ethernet;
+3- Ter pelo menos 2 computadores, um para simular o controlador, e outro pra simular uma estação;
+
+OBS: Esses computadores precisam estar rodando alguma distribuicao linux que use o [Network Manager](https://wiki.gnome.org/Projects/NetworkManager) como gerenciador de conexões de rede.
+
 
 ### Procedimento:
 
