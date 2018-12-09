@@ -18,7 +18,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-./station-manager &
+(./station-manager > station.log 2> /dev/null &)
 
 while true
 do

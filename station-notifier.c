@@ -75,8 +75,8 @@ int main(int argc, char *argv[]) {
 	strcpy (msg.myap, myap);
 	strcpy (msg.myip, myip);
 
-	printf ("AP: %s\nIP: %s\n", myap, myip);
 	printf ("Notificando controlador '%s'...\n", servIP);
+	printf ("AP: %s\nIP: %s\n", myap, myip);
 
 	if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
 		DieWithError("socket() failed\n");
